@@ -10,7 +10,6 @@ const {
   updateTaskStatus,
   deleteTaskInFolder,
   resetProgress,
-  clearProgress,
   clearTasks
 } = require('../controllers/folderController');
 

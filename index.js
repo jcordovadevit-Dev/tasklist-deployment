@@ -14,8 +14,12 @@ const swaggerJSDoc = require('swagger-jsdoc');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// allow only BASE_URL in production
+if (process.env.NODE_ENV === 'production' && process.env.BASE_URL) {
+    app.use(cors({ origin: process.env.BASE_URL }));
+} else {
+    app.use(cors());
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // parses form data
 // API routes
@@ -23,7 +27,9 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/task', taskRoutes);
 app.use('/api/v1/folders', folderRoutes);
 
-// Swagger options
+// Use BASE_URL (no trailing slash) or localhost for swagger servers
+const apiUrl = process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : ('http://localhost:' + (process.env.PORT || 3000));
+
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -33,7 +39,7 @@ const swaggerOptions = {
       description: 'Members: Jervonnie Corpuz, Peter John Delos Reyes, Jerome Cordova',
       contact: { name: 'Your Team', email: 'team@example.com' } 
     },
-    servers: [{ url: 'http://localhost:' + (process.env.PORT || 3000), description: 'Local Development' }],
+    servers: [{ url: apiUrl, description: 'API server' }],
     components: {
       securitySchemes: {
         bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }

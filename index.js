@@ -201,13 +201,13 @@ const swaggerOptions = {
           responses: { '200': { description: 'Progress reset' } }
         }
       },
-      '/api/v1/folders/{id}/progress': {
+      '/api/v1/folders/{id}/ClearTasks': {
         delete: {
           tags: ['Folders'],
           security: [{ bearerAuth: [] }],
-          summary: 'Clears progress tracking (optional)',
+          summary: 'Clears tasks in folder (deletes all tasks inside folder)',
           parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-          responses: { '200': { description: 'Progress cleared' } }
+          responses: { '200': { description: 'Folder Cleared' } }
         }
       }
     }

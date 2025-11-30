@@ -10,7 +10,7 @@ const {
   updateTaskStatus,
   deleteTaskInFolder,
   resetProgress,
-  clearProgress
+  clearTasks
 } = require('../controllers/folderController');
 
 /**
@@ -254,6 +254,6 @@ router.patch('/:id/progress/reset', auth, resetProgress);
  *       204:
  *         description: Folder progress cleared
  */
-router.delete('/:id/progress', auth, clearProgress);
+router.delete('/:id/clearTasks', auth, clearTasks);
 
 module.exports = router;

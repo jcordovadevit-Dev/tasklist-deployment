@@ -44,9 +44,14 @@ const addTaskToFolder = async (req, res) => {
         const folder = await Folder.findOne({ _id: folderId, user: req.user.id });
         if (!folder) return res.status(404).json({ error: 'Folder not found' });
 
+        const allowedStatuses = ["Pending", "Completed"];
+        const status = allowedStatuses.includes(req.body.status)
+            ? req.body.status
+            : "Pending";
+
         const task = await Task.create({
             title: req.body.title,
-            dueDate: req.body.dueDate || null,
+            dueDate: req.body.dueDate || null, status, 
             folder: folder._id,
             user: req.user.id
         });
@@ -85,6 +90,11 @@ const updateTaskStatus = async (req, res) => {
         const folderId = sanitize(req.params.folderId);
         const taskId = sanitize(req.params.taskId);
         if (!isValidId(folderId) || !isValidId(taskId)) return res.status(400).json({ error: 'Invalid id(s)' });
+
+        const allowedStatuses = ["Pending", "Completed"];
+        if (!allowedStatuses.includes(req.body.status)) {
+        return res.status(400).json({ error: "Invalid status value" });
+        }
 
         const task = await Task.findOneAndUpdate(
             { _id: taskId, folder: folderId, user: req.user.id },
@@ -137,14 +147,14 @@ const resetProgress = async (req, res) => {
 };
 
 // Clear folder progress
-const clearProgress = async (req, res) => {
+const clearTasks = async (req, res) => {
     try {
         const id = sanitize(req.params.id);
         if (!isValidId(id)) return res.status(400).json({ error: 'Invalid folder id' });
 
         await Task.deleteMany({ folder: id, user: req.user.id });
         await Folder.findByIdAndUpdate(id, { tasks: [] });
-        res.json({ message: 'Folder progress cleared' });
+        res.json({ message: 'Folder Tasks Cleared' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -177,5 +187,5 @@ module.exports = {
     updateTaskStatus,
     deleteTaskInFolder,
     resetProgress,
-    clearProgress
+    clearTasks
 };
